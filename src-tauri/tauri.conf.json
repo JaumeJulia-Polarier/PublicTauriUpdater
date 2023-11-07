@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "PublicTauriUpdater",
-    "version": "0.0.4"
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
@@ -34,7 +34,7 @@
     },
     "updater": {
       "active": true,
-      "dialog": true,
+      "dialog": false,
       "endpoints": [
         "https://github.com/JaumeJulia-Polarier/PublicTauriUpdater/releases/latest/download/latest.json"
       ],

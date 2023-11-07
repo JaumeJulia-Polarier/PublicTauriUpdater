@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
+export const RUNNING_IN_TAURI = window.__TAURI__ !== undefined;
+import { relaunch } from '@tauri-apps/api/process';
+import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
 import "./App.css";
 
 function App() {
@@ -12,9 +15,21 @@ function App() {
     setGreetMsg(await invoke("greet", { name }));
   }
 
+  //updater integration
+  if (RUNNING_IN_TAURI) {
+    useEffect(() => {
+      checkUpdate().then(({ shouldUpdate, manifest }) => {
+        if (shouldUpdate) {
+          installUpdate().then(relaunch);
+        }
+      });
+    }, []);
+  }
+  //end updater integration
+
   return (
     <div className="container">
-      <h1>Welcome to Tauri! Version 4</h1>
+      <h1>Welcome to Tauri! Version 0.0.3</h1>
 
       <div className="row">
         <a href="https://vitejs.dev" target="_blank">
