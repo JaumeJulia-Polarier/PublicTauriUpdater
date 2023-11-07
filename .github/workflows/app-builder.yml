@@ -1,0 +1,62 @@
+name: App Builder
+on:
+  push:
+    branches:
+        - main
+    # tags:
+    #   - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+        include:
+          - os: windows-latest
+            rust_target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # for projects that use labels and PRs,
+      # try https://github.com/mikepenz/release-changelog-builder-action instead
+      # TODO: use API to collect commit messages
+      - name: Build Changelog
+        id: build_changelog
+        run: echo "changelog=- ADD CHANGELOG" >> $GITHUB_OUTPUT
+
+      - name: Node.js setup
+        uses: actions/setup-node@v3
+        # NOTE: enterprise developers may hard code a version
+        with:
+          node-version: latest
+          # node-version-file: '.nvmrc'
+
+      - name: Install Rust (Stable)
+        run:
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+      - name: Install app dependencies from lockfile and build web
+        # NOTE: comment out && yarn build if frontend does not have build script
+        run: npm install --force #yarn build
+
+      - name: Build the app
+        uses: tauri-apps/tauri-action@v0
+        # run: npm run tauri build
+        # if u get Error: Resource not accessible by integration
+        # go to repository Settings => Action => General => Workflow permissions => Switch to Read and Write permisions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+            # tauri-action replaces \_\_VERSION\_\_ with the app version
+            # ${{ github.ref_name }}
+          tagName: "__VERSION__" 
+          releaseName: "Control Horario __VERSION__"
+          releaseBody: "Vamos a ver si por fin actualiza con esta version" 
+          releaseDraft: true
+          prerelease: false
