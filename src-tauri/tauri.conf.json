@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "PublicTauriUpdater",
-    "version": "0.0.4"
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
@@ -19,7 +19,7 @@
     },
     "bundle": {
       "active": true,
-      "targets": ["nsis"],
+      "targets": ["nsis", "updater"],
       "identifier": "PublicTauriUpdater",
       "icon": [
         "icons/32x32.png",
